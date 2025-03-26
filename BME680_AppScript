@@ -1,0 +1,42 @@
+function getAllData() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("BME1");
+  var firebaseUrl = "https://bme680-1-63c67-default-rtdb.asia-southeast1.firebasedatabase.app/bme680/list.json";
+  var response = UrlFetchApp.fetch(firebaseUrl);
+  var dataSet = JSON.parse(response.getContentText());
+
+  Logger.log("Data Firebase: " + JSON.stringify(dataSet, null, 2));
+
+  if (!dataSet || typeof dataSet !== "object") {
+    Logger.log("ERROR: no data");
+    return;
+  }
+
+  var rows = [];
+  var keys = Object.keys(dataSet); 
+  Logger.log("Keys Firebase: " + JSON.stringify(keys));
+
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    var data = dataSet[key]; 
+
+    Logger.log("Key data " + key + ": " + JSON.stringify(data));
+
+    if (data && typeof data === "object") {
+      rows.push([
+        data.humidity || 0,
+        data.temperature || 0,
+        data.pressure || 0,
+        data.timestamp || 0
+      ]);
+    }
+  }
+
+  Logger.log("Written data to Sheets: " + JSON.stringify(rows));
+
+  if (rows.length > 0) {
+    sheet.getRange(2, 1, rows.length, 4).setValues(rows);
+    Logger.log("Update data successfully");
+  } else {
+    Logger.log("No data");
+  }
+}
