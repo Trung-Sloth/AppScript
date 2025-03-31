@@ -1,4 +1,4 @@
-  /// Export data from Firebase to Google Sheets
+  /// Export data from Firebase to Google Sheets and automatically save as csv file
 var total_temp = 0;
 var average_temp = 0;
 var total_humid = 0;
